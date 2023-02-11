@@ -8,21 +8,16 @@
 #include <CL/opencl.hpp>
 
 int main() {
-  std::array<float, 16> mat{};
-  std::array<float, 4> vec{};
-  std::array<float, 4> result{};
-  std::array<float, 4> correct{};
+  std::array<float, 400> mat{};
+  std::array<float, 20> vec{};
+  std::array<float, 20> result{};
 
   for (unsigned i = 0; i < mat.size(); ++i) {
     mat[i] = i * 2.0f;
   }
 
-  for (unsigned i = 0; i < 4; i++) {
+  for (unsigned i = 0; i < vec.size(); ++i) {
     vec[i] = i * 3.0f;
-    correct[0] += mat[i] * vec[i];
-    correct[1] += mat[i + 4] * vec[i];
-    correct[2] += mat[i + 8] * vec[i];
-    correct[3] += mat[i + 12] * vec[i];
   }
 
   std::cout << "Matrix:\n{";
@@ -32,11 +27,6 @@ int main() {
 
   std::cout << "Vector:\n{";
   for (float elem : vec)
-    std::cout << elem << " ";
-  std::cout << "}\n";
-
-  std::cout << "Correct:\n{";
-  for (float elem : correct)
     std::cout << elem << " ";
   std::cout << "}\n";
 
@@ -81,7 +71,7 @@ int main() {
   kernel.setArg(2, sizeof(cl::Buffer), &res_buf);
 
   // Execute kernel
-  cl::NDRange global_range{4};
+  cl::NDRange global_range{result.size()};
   cl::NDRange local_range{1};
   cl::EnqueueArgs args{queue, global_range, local_range};
   cl::KernelFunctor<cl::Buffer, cl::Buffer, cl::Buffer> matvec_mult(
